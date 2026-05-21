@@ -39,28 +39,48 @@ All requests route through Traefik. Path prefix is stripped before forwarding to
 ## Directories
 
 ```
-portfolio/
+kimballbradford-com/
 ├── AGENTS.md
-├── .env                     # Production env vars (gitignored)
-├── .env.example             # Template for .env
+├── .env                          # Env vars (gitignored)
+├── .env.example                  # Template for .env
 ├── .gitignore
 ├── .gitmodules
-├── docker-compose.prod.yml  # Production — all services + Traefik
+├── docker-compose.yml            # Base — all services + Traefik (HTTP only)
+├── docker-compose.prod.yml       # Prod overlay — HTTPS, TLS, Let's Encrypt
 ├── traefik/
-│   └── acme.json            # Let's Encrypt certs (auto-created, gitignored)
+│   ├── .gitkeep
+│   └── acme.json                 # Let's Encrypt certs (gitignored)
 └── projects/
-    └── live-documents/      # Git submodule
-        ├── docker-compose.yml     # Standalone dev compose
-        ├── frontend/              # Preact SPA
-        └── backend/               # ASP.NET Core API
+    └── live-documents/           # Git submodule
+        ├── docker-compose.yml    # Standalone dev compose
+        ├── frontend/             # Preact SPA
+        └── backend/              # ASP.NET Core API
 ```
 
-## Development
+## Running
 
-Each project runs independently using its own `docker-compose.yml`:
+### Local (port 80, no HTTPS)
 
 ```bash
-# Dev mode — standalone, hot reload, no Traefik
+cp .env.example .env
+# Edit .env: DOMAIN=localhost, COLLABEDIT_JWT_KEY=some-dev-key
+docker compose up --build
+# Visit: http://localhost/live-documents/
+```
+
+### Production (DigitalOcean Droplet, with HTTPS)
+
+```bash
+cp .env.example .env
+# Edit .env: DOMAIN=kimballbradford.com, ACME_EMAIL=you@example.com, a real JWT key
+touch traefik/acme.json && chmod 600 traefik/acme.json
+
+docker compose -f docker-compose.yml -f docker-compose.prod.yml up --build -d
+```
+
+### Standalone dev (per project, no Traefik)
+
+```bash
 cd projects/live-documents
 docker compose up --build
 # Frontend: http://localhost:80
@@ -73,31 +93,11 @@ cd projects/live-documents/frontend
 npm run dev
 ```
 
-## Production (DigitalOcean Droplet)
+## Adding a new project
 
-### First-time setup
-
-```bash
-# On the droplet
-git clone https://github.com/kimballbradford/portfolio.git
-cd portfolio
-git submodule update --init
-cp .env.example .env
-# Edit .env with your domain, email, and secrets
-touch traefik/acme.json && chmod 600 traefik/acme.json
-
-docker compose -f docker-compose.prod.yml up --build -d
-```
-
-### Submodule URLs
-
-The `projects/live-documents` submodule points to `https://github.com/kimballbradford/CollabEdit.git`. Before deploying, push the CollabEdit repo to GitHub and update `.gitmodules` if the URL differs.
-
-### Add a new project
-
-1. Add a new git submodule: `git submodule add <url> projects/<project-name>`
-2. Add frontend and backend services to `docker-compose.prod.yml` with:
+1. Add a git submodule: `git submodule add <url> projects/<project-name>`
+2. Add frontend and backend services to `docker-compose.yml` with:
    - Traefik labels for path-based routing (`PathPrefix(/<project-name>)`)
-   - The backend APIs under `PathPrefix(/<project-name>/api)`
+   - Backend APIs under `PathPrefix(/<project-name>/api)`
    - `VITE_API_PREFIX: /<project-name>` build arg for the frontend
-3. Add to this file's URL routing table
+3. If the backend needs HTTPS endpoints in production, add label overrides in `docker-compose.prod.yml`.

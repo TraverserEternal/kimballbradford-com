@@ -1,0 +1,72 @@
+services:
+  traefik:
+    image: traefik:v2.11
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxy"
+      - "--entryPoints.web.address=:80"
+
+  live-documents-frontend:
+    build:
+      context: ./projects/live-documents/frontend
+      args:
+        VITE_API_PREFIX: /live-documents
+        VITE_BASE_PATH: /live-documents/
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.live-docs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents`)"
+      - "traefik.http.routers.live-docs.entrypoints=web"
+      - "traefik.http.routers.live-docs.priority=10"
+      - "traefik.http.middlewares.live-docs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs.middlewares=live-docs-strip"
+
+  live-documents-backend:
+    build: ./projects/live-documents/backend/CollabEdit.Api
+    restart: unless-stopped
+    networks:
+      proxy:
+        aliases:
+          - backend
+    volumes:
+      - collabedit-data:/app
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings:Default=Data Source=collabedit.db
+      - Jwt:Key=${COLLABEDIT_JWT_KEY}
+      - Jwt:Issuer=CollabEdit
+      - Jwt:Audience=CollabEdit
+      - Cors:Origins=["http://${DOMAIN}"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.live-docs-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/api`)"
+      - "traefik.http.routers.live-docs-api.entrypoints=web"
+      - "traefik.http.routers.live-docs-api.priority=20"
+      - "traefik.http.middlewares.live-docs-api-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs-api.middlewares=live-docs-api-strip"
+      - "traefik.http.routers.live-docs-hubs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/hubs`)"
+      - "traefik.http.routers.live-docs-hubs.entrypoints=web"
+      - "traefik.http.routers.live-docs-hubs.priority=20"
+      - "traefik.http.middlewares.live-docs-hubs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs-hubs.middlewares=live-docs-hubs-strip"
+
+volumes:
+  collabedit-data:
+
+networks:
+  proxy:
+    name: proxy
+    external: false
