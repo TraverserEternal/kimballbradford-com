@@ -94,12 +94,12 @@ Traefik v3.4 failed with `client version 1.24 is too old` on this system (Docker
 
 ## SQLite volume mounts
 
-Docker volumes mount to **directories**, not files. Mounting to a file path (`/app/collabedit.db`) creates a directory, causing SQLite's `disk I/O error`. Always mount volumes to the parent directory (`/app`).
+Bind-mount data **directories**, not files. Mounting to `/data/collabedit.db` creates a directory → `disk I/O error`. Always bind-mount to the parent directory (`/data`). Project data lives under `data/<project>/` at the repo root (gitignored).
 
 ## Checklist for adding a new project
 
 1. Add frontend and backend services to `docker-compose.yml` with Traefik labels for sub-path routing
-2. Set `VITE_BASE_PATH: /<project-name>/` and `VITE_API_PREFIX: /<project-name>` build args on the frontend
+2. Set `VITE_BASE_PATH: /<project>/` and `VITE_API_PREFIX: /<project>` build args on the frontend
 3. Add a network alias so the frontend nginx can resolve the backend service name
 4. Make sure the SPA router uses base-path-aware routes (via `url()` utility)
-5. Mount backend volumes to the directory, not to individual files
+5. Mount backend data at `./data/<project>:/data` (or equivalent) so DBs land in the gitignored `data/` directory

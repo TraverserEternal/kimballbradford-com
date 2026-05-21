@@ -42,10 +42,10 @@ services:
         aliases:
           - backend
     volumes:
-      - collabedit-data:/app
+      - ./data/live-documents:/data
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings:Default=Data Source=collabedit.db
+      - ConnectionStrings:Default=Data Source=/data/collabedit.db
       - Jwt:Key=${COLLABEDIT_JWT_KEY}
       - Jwt:Issuer=CollabEdit
       - Jwt:Audience=CollabEdit
@@ -62,9 +62,6 @@ services:
       - "traefik.http.routers.live-docs-hubs.priority=20"
       - "traefik.http.middlewares.live-docs-hubs-strip.stripprefix.prefixes=/live-documents"
       - "traefik.http.routers.live-docs-hubs.middlewares=live-docs-hubs-strip"
-
-volumes:
-  collabedit-data:
 
 networks:
   proxy:

@@ -49,11 +49,12 @@ cd projects/live-documents/frontend && npm run dev   # :5173
 | `routing.md` | Deep dive on SPA base path, nginx upstream, Traefix quirks |
 | `traefik/acme.json` | Let's Encrypt certs (gitignored, `chmod 600`) |
 | `.env` | `DOMAIN`, `COLLABEDIT_JWT_KEY`, `ACME_EMAIL`, `CF_DNS_API_TOKEN` |
+| `data/` | Per-project data directories (bind-mounted SQLite DBs, gitignored) |
 
 ## Hard-earned quirks
 
 - **Traefik v2.11 pinned**: v3.4 failed with `client version 1.24 is too old` on this system (Docker 29.4.2, API 1.54).
-- **SQLite volume:** Mount volumes to the *directory* (`/app`), not the file. Mounting to `/app/collabedit.db` creates a directory → `disk I/O error`.
+- **SQLite volumes:** Bind-mount project data directories under `data/<project>/` at the repo root. Mount to the *directory* (`/data`), not the file — mounting to `/data/collabedit.db` creates a directory → `disk I/O error`. Use `Data Source=/data/collabedit.db` so the DB lands on the bind mount without shadowing the app's own `/app` directory.
 - **SPA base path:** `VITE_BASE_PATH` build arg sets Vite's `base` so assets resolve under the sub-path. Routes use a `url()` utility to prepend the base path. See `routing.md` for details.
 - **nginx upstream:** In standalone compose the backend is `backend:5000`; in root compose it resolves via network alias `backend` → `live-documents-backend`.
 
@@ -65,4 +66,5 @@ cd projects/live-documents/frontend && npm run dev   # :5173
 
 1. `git submodule add <url> projects/<name>`
 2. Add frontend & backend services to `docker-compose.yml` with Traefik labels (`PathPrefix(/<name>)`), `VITE_BASE_PATH: /<name>/`, and a network alias on the backend for nginx.
-3. Override `entrypoints=websecure` + `tls.certresolver=letsencrypt` in `docker-compose.prod.yml` if the backend needs HTTPS.
+3. Mount backend data at `./data/<name>:/data` (or equivalent) so DBs land in the gitignored `data/` directory.
+4. Override `entrypoints=websecure` + `tls.certresolver=letsencrypt` in `docker-compose.prod.yml` if the backend needs HTTPS.
