@@ -47,6 +47,7 @@ cd projects/live-documents/frontend && npm run dev   # :5173
 | `docker-compose.yml` | Base — all services + Traefik (HTTP only) |
 | `docker-compose.prod.yml` | Prod overlay — HTTPS via Let's Encrypt + Cloudflare DNS challenge |
 | `routing.md` | Deep dive on SPA base path, nginx upstream, Traefix quirks |
+| `data.md` | Deep dive on bind mounts, path resolution, backup/restore |
 | `traefik/acme.json` | Let's Encrypt certs (gitignored, `chmod 600`) |
 | `.env` | `DOMAIN`, `COLLABEDIT_JWT_KEY`, `ACME_EMAIL`, `CF_DNS_API_TOKEN` |
 | `data/` | Per-project data directories (bind-mounted SQLite DBs, gitignored) |
@@ -54,7 +55,7 @@ cd projects/live-documents/frontend && npm run dev   # :5173
 ## Hard-earned quirks
 
 - **Traefik v2.11 pinned**: v3.4 failed with `client version 1.24 is too old` on this system (Docker 29.4.2, API 1.54).
-- **SQLite volumes:** Bind-mount project data directories under `data/<project>/` at the repo root. Mount to the *directory* (`/data`), not the file — mounting to `/data/collabedit.db` creates a directory → `disk I/O error`. Use `Data Source=/data/collabedit.db` so the DB lands on the bind mount without shadowing the app's own `/app` directory.
+- **SQLite volumes:** See `data.md` for the full breakdown. Key rule: mount to `/data`, not `/data/collabedit.db`.
 - **SPA base path:** `VITE_BASE_PATH` build arg sets Vite's `base` so assets resolve under the sub-path. Routes use a `url()` utility to prepend the base path. See `routing.md` for details.
 - **nginx upstream:** In standalone compose the backend is `backend:5000`; in root compose it resolves via network alias `backend` → `live-documents-backend`.
 
