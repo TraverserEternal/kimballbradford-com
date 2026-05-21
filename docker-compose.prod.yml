@@ -1,0 +1,82 @@
+services:
+  traefik:
+    image: traefik:v3.4
+    container_name: traefik
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    networks:
+      - proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN}
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/acme.json:/letsencrypt/acme.json
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=proxy"
+      - "--entryPoints.web.address=:80"
+      - "--entryPoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entryPoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entryPoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.tlschallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.email=${ACME_EMAIL}"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
+
+  live-documents-frontend:
+    build:
+      context: ./projects/live-documents/frontend
+      args:
+        VITE_API_PREFIX: /live-documents
+    restart: unless-stopped
+    networks:
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.live-docs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents`)"
+      - "traefik.http.routers.live-docs.entrypoints=websecure"
+      - "traefik.http.routers.live-docs.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.live-docs.priority=10"
+      - "traefik.http.middlewares.live-docs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs.middlewares=live-docs-strip"
+
+  live-documents-backend:
+    build: ./projects/live-documents/backend/CollabEdit.Api
+    restart: unless-stopped
+    networks:
+      - proxy
+    volumes:
+      - collabedit-data:/app/collabedit.db
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings:Default=Data Source=collabedit.db
+      - Jwt:Key=${COLLABEDIT_JWT_KEY}
+      - Jwt:Issuer=CollabEdit
+      - Jwt:Audience=CollabEdit
+      - Cors:Origins=["https://${DOMAIN}"]
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.live-docs-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/api`)"
+      - "traefik.http.routers.live-docs-api.entrypoints=websecure"
+      - "traefik.http.routers.live-docs-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.live-docs-api.priority=20"
+      - "traefik.http.middlewares.live-docs-api-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs-api.middlewares=live-docs-api-strip"
+      - "traefik.http.routers.live-docs-hubs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/hubs`)"
+      - "traefik.http.routers.live-docs-hubs.entrypoints=websecure"
+      - "traefik.http.routers.live-docs-hubs.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.live-docs-hubs.priority=20"
+      - "traefik.http.middlewares.live-docs-hubs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.routers.live-docs-hubs.middlewares=live-docs-hubs-strip"
+
+volumes:
+  collabedit-data:
+
+networks:
+  proxy:
+    name: proxy
+    external: false
