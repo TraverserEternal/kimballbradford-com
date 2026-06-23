@@ -18,21 +18,21 @@ All requests hit Traefik on port 80. Traefik routes based on `PathPrefix` and st
 | Browser URL | Traefik matches | Strips | Forwards to |
 |---|---|---|---|---|
 | `/` | `PathPrefix(/)` priority 1 | — | `root-site:80/` |
-| `/live-documents` | `PathPrefix(/live-documents)` priority 10 | `/live-documents` | `frontend:80/` |
-| `/live-documents/api/*` | `PathPrefix(/live-documents/api)` priority 20 | `/live-documents` | `backend:5000/api/*` |
-| `/live-documents/hubs/*` | `PathPrefix(/live-documents/hubs)` priority 20 | `/live-documents` | `backend:5000/hubs/*` |
+| `/live-projects/live-documents` | `PathPrefix(/live-projects/live-documents)` priority 10 | `/live-projects/live-documents` | `frontend:80/` |
+| `/live-projects/live-documents/api/*` | `PathPrefix(/live-projects/live-documents/api)` priority 20 | `/live-projects/live-documents` | `backend:5000/api/*` |
+| `/live-projects/live-documents/hubs/*` | `PathPrefix(/live-projects/live-documents/hubs)` priority 20 | `/live-projects/live-documents` | `backend:5000/hubs/*` |
 | `/*` (anything else) | `PathPrefix(/)` priority 1 | — | `root-site:80/` → nginx `error_page 404` → `404.html` |
 
-Priority 1 is the lowest — all specific routes match first. Anything that doesn't match `/live-documents*` falls through to the root-site, which serves `index.html` at `/` and nginx's `error_page 404 /404.html` for unknown paths.
+Priority 1 is the lowest — all specific routes match first. Anything that doesn't match `/live-projects/live-documents*` falls through to the root-site, which serves `index.html` at `/` and nginx's `error_page 404 /404.html` for unknown paths.
 
 ## SPA base path
 
 Vite builds with `base` set to the sub-path so asset references (JS, CSS) use the correct URL:
 
-- **Root compose**: `base: /live-documents/` (set via `VITE_BASE_PATH` build arg)
+- **Root compose**: `base: /live-projects/live-documents/` (set via `VITE_BASE_PATH` build arg)
 - **Standalone**: `base: /` (default, VITE_BASE_PATH is empty)
 
-Without this, the HTML references assets at `/assets/foo.js` instead of `/live-documents/assets/foo.js`, and Traefik never routes them to the frontend container.
+Without this, the HTML references assets at `/assets/foo.js` instead of `/live-projects/live-documents/assets/foo.js`, and Traefik never routes them to the frontend container.
 
 ### Getting the base path into the SPA
 

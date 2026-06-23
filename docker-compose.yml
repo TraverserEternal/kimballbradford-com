@@ -21,17 +21,17 @@ services:
     build:
       context: ./projects/live-documents/frontend
       args:
-        VITE_API_PREFIX: /live-documents
-        VITE_BASE_PATH: /live-documents/
+        VITE_API_PREFIX: /live-projects/live-documents
+        VITE_BASE_PATH: /live-projects/live-documents/
     restart: unless-stopped
     networks:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.live-docs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents`)"
+      - "traefik.http.routers.live-docs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-projects/live-documents`)"
       - "traefik.http.routers.live-docs.entrypoints=web"
       - "traefik.http.routers.live-docs.priority=10"
-      - "traefik.http.middlewares.live-docs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.middlewares.live-docs-strip.stripprefix.prefixes=/live-projects/live-documents"
       - "traefik.http.routers.live-docs.middlewares=live-docs-strip"
 
   root-site:
@@ -67,15 +67,15 @@ services:
       - Cors:Origins=["http://${DOMAIN}"]
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.live-docs-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/api`)"
+      - "traefik.http.routers.live-docs-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-projects/live-documents/api`)"
       - "traefik.http.routers.live-docs-api.entrypoints=web"
       - "traefik.http.routers.live-docs-api.priority=20"
-      - "traefik.http.middlewares.live-docs-api-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.middlewares.live-docs-api-strip.stripprefix.prefixes=/live-projects/live-documents"
       - "traefik.http.routers.live-docs-api.middlewares=live-docs-api-strip"
-      - "traefik.http.routers.live-docs-hubs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-documents/hubs`)"
+      - "traefik.http.routers.live-docs-hubs.rule=Host(`${DOMAIN}`) && PathPrefix(`/live-projects/live-documents/hubs`)"
       - "traefik.http.routers.live-docs-hubs.entrypoints=web"
       - "traefik.http.routers.live-docs-hubs.priority=20"
-      - "traefik.http.middlewares.live-docs-hubs-strip.stripprefix.prefixes=/live-documents"
+      - "traefik.http.middlewares.live-docs-hubs-strip.stripprefix.prefixes=/live-projects/live-documents"
       - "traefik.http.routers.live-docs-hubs.middlewares=live-docs-hubs-strip"
 
 networks:

@@ -6,9 +6,9 @@ Multi-project portfolio site. Single DigitalOcean droplet, all behind Traefik re
 
 ```
 Traefik (:80 / :443)
-  ├── /live-documents/*       → live-documents-frontend:80  (nginx, Preact SPA)
-  ├── /live-documents/api/*   → live-documents-backend:5000 (ASP.NET Core)
-  └── /live-documents/hubs/*  → live-documents-backend:5000 (SignalR WebSocket)
+  ├── /live-projects/live-documents/*       → live-documents-frontend:80  (nginx, Preact SPA)
+  ├── /live-projects/live-documents/api/*   → live-documents-backend:5000 (ASP.NET Core)
+  └── /live-projects/live-documents/hubs/*  → live-documents-backend:5000 (SignalR WebSocket)
 ```
 
 All routes through Traefik. Path prefix stripped before forwarding. API/hubs routes have priority 20 vs frontend's 10.
@@ -19,7 +19,7 @@ All routes through Traefik. Path prefix stripped before forwarding. API/hubs rou
 cp .env.example .env   # ⚠ .env.example does NOT exist — hand-craft from .env
 # DOMAIN=localhost, COLLABEDIT_JWT_KEY=key-32+bytes
 docker compose up --build
-# → http://localhost/live-documents/
+# → http://localhost/live-projects/live-documents/
 ```
 
 **Production:**
