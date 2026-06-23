@@ -1,0 +1,139 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #1a1a2e;
+  --surface: #16213e;
+  --surface2: #0f3460;
+  --accent: #e94560;
+  --text: #eee;
+  --text-dim: #999;
+  --border: #333;
+  --radius: 8px;
+}
+
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 14px;
+}
+button:hover {
+  opacity: 0.9;
+}
+
+input,
+textarea {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  outline: none;
+}
+input:focus,
+textarea:focus {
+  border-color: var(--accent);
+}
+
+textarea {
+  resize: vertical;
+  font-family: inherit;
+}
+
+.navbar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 24px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.navbar .logo {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-right: auto;
+}
+.navbar a {
+  font-size: 14px;
+}
+
+.page {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+.page h1 {
+  margin-bottom: 16px;
+}
+.page p {
+  color: var(--text-dim);
+  margin-bottom: 12px;
+}
+
+.footer {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-dim);
+  font-size: 13px;
+  border-top: 1px solid var(--border);
+}
+
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 500px;
+}
+.contact-form label {
+  font-size: 14px;
+  color: var(--text-dim);
+}
+.contact-form input,
+.contact-form textarea {
+  width: 100%;
+}
+
+.not-found {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: calc(100vh - 120px);
+  gap: 16px;
+  text-align: center;
+}
+.not-found h1 {
+  font-size: 64px;
+  color: var(--accent);
+}
+.not-found .links {
+  display: flex;
+  gap: 12px;
+}
