@@ -6,6 +6,7 @@ Multi-project portfolio site. Single DigitalOcean droplet, all behind Traefik re
 
 ```
 Traefik (:80 / :443)
+  ├── /                                    → portfolio:80 (nginx, Preact SPA — root site)
   ├── /live-projects/live-documents/*       → live-documents-frontend:80  (nginx, Preact SPA)
   ├── /live-projects/live-documents/api/*   → live-documents-backend:5000 (ASP.NET Core)
   └── /live-projects/live-documents/hubs/*  → live-documents-backend:5000 (SignalR WebSocket)
@@ -19,7 +20,7 @@ All routes through Traefik. Path prefix stripped before forwarding. API/hubs rou
 cp .env.example .env   # ⚠ .env.example does NOT exist — hand-craft from .env
 # DOMAIN=localhost, COLLABEDIT_JWT_KEY=key-32+bytes
 docker compose up --build
-# → http://localhost/live-projects/live-documents/
+# → http://localhost/ (portfolio SPA) and http://localhost/live-projects/live-documents/
 ```
 
 **Production:**
@@ -38,6 +39,9 @@ docker compose up --build
 
 # Or Vite dev server with hot reload:
 cd projects/live-documents/frontend && npm run dev   # :5173
+
+cd projects/portfolio
+npm run dev   # :5173
 ```
 
 ## Key files
@@ -51,6 +55,7 @@ cd projects/live-documents/frontend && npm run dev   # :5173
 | `traefik/acme.json` | Let's Encrypt certs (gitignored, `chmod 600`) |
 | `.env` | `DOMAIN`, `COLLABEDIT_JWT_KEY`, `ACME_EMAIL`, `CF_DNS_API_TOKEN` |
 | `data/` | Per-project data directories (bind-mounted SQLite DBs, gitignored) |
+| `projects/portfolio/` | Root-site portfolio SPA (Preact, Vite, nginx) |
 
 ## Hard-earned quirks
 

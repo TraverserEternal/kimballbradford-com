@@ -17,13 +17,13 @@ All requests hit Traefik on port 80. Traefik routes based on `PathPrefix` and st
 
 | Browser URL | Traefik matches | Strips | Forwards to |
 |---|---|---|---|---|
-| `/` | `PathPrefix(/)` priority 1 | — | `root-site:80/` |
+| `/` | `PathPrefix(/)` priority 1 | — | `root-site:80/` → portfolio SPA `index.html` |
 | `/live-projects/live-documents` | `PathPrefix(/live-projects/live-documents)` priority 10 | `/live-projects/live-documents` | `frontend:80/` |
 | `/live-projects/live-documents/api/*` | `PathPrefix(/live-projects/live-documents/api)` priority 20 | `/live-projects/live-documents` | `backend:5000/api/*` |
 | `/live-projects/live-documents/hubs/*` | `PathPrefix(/live-projects/live-documents/hubs)` priority 20 | `/live-projects/live-documents` | `backend:5000/hubs/*` |
-| `/*` (anything else) | `PathPrefix(/)` priority 1 | — | `root-site:80/` → nginx `error_page 404` → `404.html` |
+| `/*` (anything else) | `PathPrefix(/)` priority 1 | — | `root-site:80/` → portfolio SPA `index.html` (SPA routing handles 404s) |
 
-Priority 1 is the lowest — all specific routes match first. Anything that doesn't match `/live-projects/live-documents*` falls through to the root-site, which serves `index.html` at `/` and nginx's `error_page 404 /404.html` for unknown paths.
+Priority 1 is the lowest — all specific routes match first. Anything that doesn't match `/live-projects/live-documents*` falls through to the root-site, which serves the portfolio SPA's `index.html`. Client-side routing in the portfolio handles `/work`, `/blog`, `/live-projects`, and any unknown paths.
 
 ## SPA base path
 
