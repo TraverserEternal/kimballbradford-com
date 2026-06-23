@@ -16,12 +16,14 @@ All requests hit Traefik on port 80. Traefik routes based on `PathPrefix` and st
 ## Root compose (Traefik + sub-path routing)
 
 | Browser URL | Traefik matches | Strips | Forwards to |
-|---|---|---|---|
+|---|---|---|---|---|
+| `/` | `PathPrefix(/)` priority 1 | — | `root-site:80/` |
 | `/live-documents` | `PathPrefix(/live-documents)` priority 10 | `/live-documents` | `frontend:80/` |
 | `/live-documents/api/*` | `PathPrefix(/live-documents/api)` priority 20 | `/live-documents` | `backend:5000/api/*` |
 | `/live-documents/hubs/*` | `PathPrefix(/live-documents/hubs)` priority 20 | `/live-documents` | `backend:5000/hubs/*` |
+| `/*` (anything else) | `PathPrefix(/)` priority 1 | — | `root-site:80/` → nginx `error_page 404` → `404.html` |
 
-The higher-priority API/hubs routes (20) take precedence over the catch-all frontend route (10).
+Priority 1 is the lowest — all specific routes match first. Anything that doesn't match `/live-documents*` falls through to the root-site, which serves `index.html` at `/` and nginx's `error_page 404 /404.html` for unknown paths.
 
 ## SPA base path
 
