@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+cat <<EOF
+kimballbradford.com — multi-project portfolio on a single DigitalOcean droplet.
+
+Architecture: Traefik reverse proxy (:80/:443) routes by path prefix to
+per-project Docker containers. Currently one project:
+
+  live-documents  →  Preact SPA (nginx) + ASP.NET Core API (SQLite)
+
+Scripts in this directory:
+
+  ./help       Show this message
+
+  ./run        Interactive menu to start the site (or parts of it).
+               Choose full stack, standalone project, or Vite dev server.
+               Ctrl+C to stop.
+
+  ./upload     Build Docker images locally, then deploy to the droplet:
+                  1. Build images locally with docker compose build
+                  2. Save and compress images to a tar
+                  3. SSH to droplet (user: deploy, key: digitalocean)
+                  4. Stop any running services
+                  5. rsync project files (excludes .git, data/, .env, keys)
+                  6. scp and docker load the images
+                  7. Start with --no-build (HTTP or HTTPS depending on .env)
+
+Quickstart (local dev):
+
+  # Full site (Traefik + all projects)
+  docker compose up --build
+
+  # Live Documents standalone (no Traefik, :80 frontend, :5000 backend)
+  cd projects/live-documents && docker compose up --build
+
+  # Frontend only (Vite dev server, :5173, hot reload)
+  cd projects/live-documents/frontend && npm run dev
+
+First-time droplet setup (before ./upload):
+
+  The upload script handles first-time setup automatically:
+    - Creates the deploy user
+    - Installs Docker via get.docker.com
+    - Copies the SSH public key
+
+  You just need to create one file on the droplet beforehand:
+
+      ~/kimballbradford-com/.env
+
+  Example .env:
+
+      DOMAIN=kimballbradford.com
+      COLLABEDIT_JWT_KEY=<32+ random bytes>
+      ACME_EMAIL=you@example.com
+
+  For HTTPS, also open port 443 in the DigitalOcean firewall.
+  The script skips .env during rsync so it persists across deploys.
+
+Environment:
+
+  .env              Required on the droplet. Copied manually (never uploaded).
+  data/             Gitignored. Bind-mounted SQLite databases per project.
+  digitalocean      SSH private key for deployment (gitignored).
+EOF

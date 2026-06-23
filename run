@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+ROOT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+echo "kimballbradford.com — which service?"
+echo ""
+echo "  1) Full site (Traefik + all projects)"
+echo "  2) Live Documents — full stack standalone (no Traefik)"
+echo "  3) Live Documents — frontend dev server (Vite, hot reload)"
+echo "  q) Quit"
+echo ""
+
+read -rp "Choice: " choice
+
+case "$choice" in
+  1)
+    echo "Starting full site (Ctrl+C to stop)..."
+    cd "$ROOT_DIR" && exec docker compose up --build
+    ;;
+  2)
+    echo "Starting Live Documents standalone (Ctrl+C to stop)..."
+    cd "$ROOT_DIR/projects/live-documents" && exec docker compose up --build
+    ;;
+  3)
+    echo "Starting Vite dev server (Ctrl+C to stop)..."
+    cd "$ROOT_DIR/projects/live-documents/frontend" && exec npm run dev
+    ;;
+  q|Q)
+    exit 0
+    ;;
+  *)
+    echo "Invalid choice: $choice"
+    exit 1
+    ;;
+esac
