@@ -4,7 +4,6 @@ import { url } from "../routes";
 const links = [
   { href: "/", label: "Home" },
   { href: "/work", label: "Work" },
-  { href: "/blog", label: "Blog" },
   { href: "/live-projects", label: "Live Projects" },
 ];
 
