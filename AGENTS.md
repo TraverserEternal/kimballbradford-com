@@ -55,6 +55,7 @@ npm run dev   # :5173
 | `traefik/acme.json` | Let's Encrypt certs (gitignored, `chmod 600`) |
 | `.env` | `DOMAIN`, `COLLABEDIT_JWT_KEY`, `ACME_EMAIL`, `CF_DNS_API_TOKEN` |
 | `data/` | Per-project data directories (bind-mounted SQLite DBs, gitignored) |
+| `projects/contact-api/` | Contact form email API (Node.js, Express, nodemailer, Gmail SMTP) |
 | `projects/portfolio/` | Root-site portfolio SPA (Preact, Vite, nginx) |
 
 ## Hard-earned quirks
@@ -67,6 +68,15 @@ npm run dev   # :5173
 ## Submodule
 
 `projects/live-documents` = `https://github.com/kimballbradford/CollabEdit.git`. Run `git submodule update --init --recursive` after clone. The submodule has its own `AGENTS.md` with CollabEdit internals.
+
+## Contact API
+
+`projects/contact-api/` is a Node.js/Express service that receives `POST /api/contact` with `{name, email, message}` and sends an email via Gmail SMTP (nodemailer). Traefik routes `/api/contact` (priority 20) to it. Configured via `.env`:
+
+- `SMTP_USER` — Gmail address for SMTP auth
+- `SMTP_PASS` — Gmail App Password ([how to generate](https://myaccount.google.com/apppasswords))
+- `CONTACT_EMAIL_RECIPIENT` — where contact emails are sent
+- `CONTACT_EMAIL_FROM` — from address (must match SMTP user or be a verified alias)
 
 ## Adding a project
 

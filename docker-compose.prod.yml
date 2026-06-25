@@ -23,6 +23,11 @@ services:
       - "traefik.http.routers.live-docs.entrypoints=websecure"
       - "traefik.http.routers.live-docs.tls.certresolver=letsencrypt"
 
+  contact-api:
+    labels:
+      - "traefik.http.routers.contact-api.entrypoints=websecure"
+      - "traefik.http.routers.contact-api.tls.certresolver=letsencrypt"
+
   root-site:
     labels:
       - "traefik.http.routers.root.entrypoints=websecure"

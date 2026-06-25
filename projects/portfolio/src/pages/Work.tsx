@@ -1,5 +1,5 @@
 import { ContactForm } from "../components/ContactForm";
-import { WorkCard } from "../components/WorkCard";
+import { ProjectCard } from "../components/ProjectCard";
 import { DotMask } from "../components/DotMask";
 
 export function Work() {
@@ -11,14 +11,100 @@ export function Work() {
         { cy: '75%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
         { cy: '105%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
         { cy: '140%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+        { cy: '170%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
       ]} />
       <h1>Work</h1>
       <p>Projects I&rsquo;ve built.</p>
 
       <div class="entry-list">
-        <WorkCard
+        <ProjectCard
+          title="Ralph Loops"
+          tags={["AI Tooling", "Agentic Workflows", "Productivity", "TypeScript"]}
+        >
+          <p>
+            Agentic coding is everywhere, but throwing endless tokens at complex
+            software problems often creates as many issues as it solves;
+            I&rsquo;ve mentioned how hard unchecked AI code can be to work
+            through in other projects. While AI agents speed up boilerplate
+            generation and code comprehension, they suffer from two major flaws:
+            astronomical token costs and a general lack of structured code
+            verification.
+          </p>
+          <p>
+            The question is: how do you harness the best traits of agentic
+            coding while maintaining deterministic control and cost efficiency?
+          </p>
+          <p>
+            One compelling answer lies in a methodology I came across called the
+            Ralph Loop. The underlying concept is named after the idea that even
+            an average guy&mdash;let&rsquo;s call him Ralph&mdash;can
+            successfully execute highly complicated tasks if they are broken
+            down into small, bite-sized pieces. In an AI context, instead of
+            asking a massive model to build an entire feature, a parent agent
+            breaks the objective into isolated micro-tasks and recursively
+            prompts child agents with only the hyper-localized context they need
+            for that specific step. Once a child agent finishes, it reports
+            back, and the parent verifies the work before moving on.
+          </p>
+          <p>
+            While I didn&rsquo;t invent the concept, the philosophy resonated
+            with me, so I decided to build my own custom Ralph Loop harness for
+            opencode. I specifically wanted a workflow that allowed me to easily
+            inspect the generated code at every milestone and safely roll back
+            to any previous step in the execution tree.
+          </p>
+          <h3>Implementation</h3>
+          <p>
+            My tool breaks the agentic workflow down into three distinct phases
+            managed via Git:
+          </p>
+          <p>
+            <strong>Initialization (ralph-loop.json):</strong> The tool
+            generates a configuration file mapping out the execution tree. Each
+            step specifies the initial prompt for the child agent, a target Git
+            branch to prevent muddying up the main codebase, a commit name, a
+            placeholder for the commit hash, and strict test requirements that
+            must pass before the loop advances.
+          </p>
+          <p>
+            <strong>Execution &amp; Context Stashing:</strong> When running the
+            loop, the agent generates the solution, verifies its work against
+            the tests, and makes a Git commit. Crucially, the parent agent
+            writes highly verbose commit messages. By stashing the underlying
+            rationale directly into the Git history, I can later query the
+            parent process about specific design decisions. This completely
+            bypasses the context degradation issues common in long-lived LLM
+            sessions, without requiring the parent to remain actively loaded in
+            memory.
+          </p>
+          <p>
+            <strong>Chronological Review:</strong> A simple review-changes skill
+            commands the parent agent to check out each commit hash
+            chronologically. The system listens to my feedback, adjusts
+            accordingly, and outputs a notes-on-changes.md file, which seamlessly
+            acts as the requirement specification for the next optimization loop.
+          </p>
+          <h3>What I Learned</h3>
+          <p>
+            Agentic coding is undeniably transformative, but burning through
+            massive token windows is rarely the smartest approach. This project
+            proved that with structured tooling, rigorous workflows, and
+            automated verification loops, smaller, hyper-focused models can
+            rival or exceed the performance of massive foundational models.
+            Building this has convinced me of the immense value of custom agent
+            harnesses&mdash;and has me looking forward to building the next
+            iteration.
+          </p>
+          <p>
+            You can review the core engine and implementation details directly
+            on{' '}
+            <a href="https://github.com/traverserEternal/ralph-loop" target="_blank" rel="noopener noreferrer">GitHub</a>.
+          </p>
+        </ProjectCard>
+
+        <ProjectCard
           title="Narration Fixer"
-          tags={["Rust", "Tauri", "Preact", "Desktop", "Audio Engineering"]}
+          tags={["Rust", "TypeScript", "Tauri", "Preact", "Desktop", "Audio Engineering"]}
         >
           <p>
             Narrators face a massive bottleneck when dealing with raw audio. In a
@@ -107,11 +193,11 @@ export function Work() {
           <p>
             The Narration Fixer is still in development, but it will soon be available for download on desktop.
           </p>
-        </WorkCard>
+        </ProjectCard>
 
-        <WorkCard
+        <ProjectCard
           title="Grapefruit"
-          tags={["Capacitor", "React", "iOS", "Android"]}
+          tags={["TypeScript", "Capacitor", "React", "iOS", "Android"]}
         >
           <p>
             Grapefruit is a digital planning and life-organization app for iOS
@@ -191,11 +277,11 @@ export function Work() {
             logistics can impact your timeline just as much as rewriting a
             broken architecture.
           </p>
-        </WorkCard>
+        </ProjectCard>
 
-        <WorkCard
+        <ProjectCard
           title="Mind"
-          tags={["React Native", "Mobile Development", "Cybersecurity", "Local-First"]}
+          tags={["TypeScript", "React Native", "Mobile Development", "Cybersecurity", "Local-First"]}
         >
           <p>
             Mind is a mobile journal app built on the premise that strict
@@ -244,11 +330,11 @@ export function Work() {
             Mind is currently in active development, and you can review the
             codebase directly on <a href="https://github.com/TraverserEternal/Mind" target="_blank" rel="noopener noreferrer">GitHub</a>.
           </p>
-        </WorkCard>
+        </ProjectCard>
 
-        <WorkCard
+        <ProjectCard
           title="dallinbradford.com"
-          tags={["Preact", "AWS", "Serverless", "Web Development"]}
+          tags={["TypeScript", "Preact", "AWS", "Serverless", "Web Development"]}
         >
           <p>
             Dallin Bradford is a successful audiobook narrator who approached me
@@ -299,7 +385,7 @@ export function Work() {
           <p>
             You can visit <a href="https://dallinbradford.com" target="_blank" rel="noopener noreferrer">dallinbradford.com</a> to see the live site.
           </p>
-        </WorkCard>
+        </ProjectCard>
       </div>
 
       <section class="contact-section">

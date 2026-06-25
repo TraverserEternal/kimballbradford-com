@@ -34,6 +34,24 @@ services:
       - "traefik.http.middlewares.live-docs-strip.stripprefix.prefixes=/live-projects/live-documents"
       - "traefik.http.routers.live-docs.middlewares=live-docs-strip"
 
+  contact-api:
+    build: ./projects/contact-api
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      - SMTP_HOST=smtp.gmail.com
+      - SMTP_PORT=587
+      - SMTP_USER=${SMTP_USER}
+      - SMTP_PASS=${SMTP_PASS}
+      - CONTACT_EMAIL_RECIPIENT=${CONTACT_EMAIL_RECIPIENT}
+      - CONTACT_EMAIL_FROM=${CONTACT_EMAIL_FROM}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.contact-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api/contact`)"
+      - "traefik.http.routers.contact-api.entrypoints=web"
+      - "traefik.http.routers.contact-api.priority=20"
+
   root-site:
     build: ./projects/portfolio
     container_name: root-site

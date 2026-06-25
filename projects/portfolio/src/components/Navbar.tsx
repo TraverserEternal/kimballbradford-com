@@ -1,5 +1,6 @@
 import { useLocation } from "preact-iso";
 import { url } from "../routes";
+import { themes, currentTheme, setTheme } from "../theme";
 
 const links = [
   { href: "/", label: "Home" },
@@ -13,6 +14,17 @@ export function Navbar() {
   return (
     <nav class="navbar">
       <a href={url("/")} class="logo">Kimball Bradford</a>
+      <div class="theme-dots">
+        {themes.map((t) => (
+          <button
+            class={`theme-dot${currentTheme.value.name === t.name ? " theme-dot--active" : ""}`}
+            style={{ background: t.circleColor }}
+            onClick={() => setTheme(t.name)}
+            title={t.label}
+            aria-label={`Switch to ${t.label} theme`}
+          />
+        ))}
+      </div>
       {links.map((link) => (
         <a
           href={url(link.href)}

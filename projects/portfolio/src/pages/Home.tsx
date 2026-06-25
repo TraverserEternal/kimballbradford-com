@@ -9,9 +9,9 @@ export function Home() {
       <section class="hero">
         <h1>Kimball Bradford</h1>
         <p>
-          Software engineer building web applications and tools. I specialize in
-          full-stack development, real-time systems, and creating polished user
-          experiences.
+          I build practical software across disciplines- optimized sites
+          and portfolios, professional desktop tools, encrypted mobile apps,
+          and more.
         </p>
         <div class="links">
           <a href={url("/work")} class="btn">View My Work</a>

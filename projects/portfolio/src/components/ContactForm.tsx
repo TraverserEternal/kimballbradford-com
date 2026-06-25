@@ -12,6 +12,8 @@ export function ContactForm() {
   const [message, setMessage] = useState("");
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [serverError, setServerError] = useState("");
 
   const validate = (): FormErrors => {
     const errs: FormErrors = {};
@@ -23,16 +25,34 @@ export function ContactForm() {
     return errs;
   };
 
-  const handleSubmit = (e: Event) => {
+  const handleSubmit = async (e: Event) => {
     e.preventDefault();
     setSubmitted(false);
+    setServerError("");
     const v = validate();
     setErrors(v);
     if (Object.keys(v).length === 0) {
-      setSubmitted(true);
-      setName("");
-      setEmail("");
-      setMessage("");
+      setSending(true);
+      try {
+        const res = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: name.trim(), email: email.trim(), message: message.trim() }),
+        });
+        const data = await res.json();
+        if (!data.ok) {
+          setServerError(data.errors?.[0] || "Something went wrong.");
+          return;
+        }
+        setSubmitted(true);
+        setName("");
+        setEmail("");
+        setMessage("");
+      } catch {
+        setServerError("Network error — please check your connection and try again.");
+      } finally {
+        setSending(false);
+      }
     }
   };
 
@@ -63,8 +83,9 @@ export function ContactForm() {
         </label>
         {errors.message && <span class="error">{errors.message}</span>}
       </div>
-      <button type="submit">Send Message</button>
+      <button type="submit" disabled={sending}>{sending ? "Sending..." : "Send Message"}</button>
       {submitted && <div class="success">Thanks for reaching out! I&rsquo;ll get back to you soon.</div>}
+      {serverError && <div class="error server-error">{serverError}</div>}
     </form>
   );
 }

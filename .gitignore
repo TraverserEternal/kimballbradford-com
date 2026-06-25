@@ -5,3 +5,9 @@ data/
 # SSH keys
 digitalocean
 digitalocean.pub
+
+# Node
+node_modules/
+
+# Generated
+ralph-plan.json

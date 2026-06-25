@@ -1,7 +1,10 @@
 import { render } from "preact";
 import { LocationProvider } from "preact-iso";
 import { App } from "./App";
+import { applyInitialTheme } from "./theme";
 import "./index.css";
+
+applyInitialTheme();
 
 render(
   <LocationProvider>

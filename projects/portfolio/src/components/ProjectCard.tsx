@@ -1,17 +1,23 @@
 import { useState } from "preact/hooks";
 import type { ComponentChildren } from "preact";
 
-interface WorkCardProps {
+interface ProjectCardProps {
   title: string;
   tags: string[];
+  href?: string;
   children: ComponentChildren;
 }
 
-export function WorkCard({ title, tags, children }: WorkCardProps) {
+export function ProjectCard({ title, tags, href, children }: ProjectCardProps) {
   const [expanded, setExpanded] = useState(false);
 
   return (
     <article class="entry">
+      {href && (
+        <a href={href} class="project-link" target="_blank" rel="noopener noreferrer">
+          View Live Project &rarr;
+        </a>
+      )}
       <button
         class="entry-header"
         onClick={() => setExpanded((v) => !v)}
