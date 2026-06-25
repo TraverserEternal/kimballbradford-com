@@ -122,6 +122,48 @@ textarea {
   color: #fff;
 }
 
+.layout {
+  position: relative;
+}
+.bg-dots {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -2;
+  background-image:
+    radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px),
+    radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+  background-size: 40px 40px, 40px 40px;
+  background-position: 0 0, 20px 20px;
+  opacity: 0.25;
+  mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 70%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 0%,
+    black 70%,
+    transparent 100%
+  );
+}
+
+.dot-mask {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse var(--dm-w, 900px) var(--dm-h, 600px) at var(--dm-cx, 50%) var(--dm-cy, 30%),
+    var(--dm-bg, var(--bg)) 0%,
+    var(--dm-bg, var(--bg)) var(--dm-hide, 30%),
+    transparent var(--dm-hide, 30%),
+    transparent 100%
+  );
+}
+
 .navbar {
   display: flex;
   align-items: center;
@@ -173,6 +215,7 @@ textarea {
 }
 
 .hero {
+  position: relative;
   text-align: center;
   padding: 64px 0 48px;
 }
@@ -254,12 +297,68 @@ textarea {
   color: var(--text-muted);
   margin-bottom: 8px;
 }
-.entry h2 {
+.entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0 0.25rem;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+.entry-header:hover .chevron {
+  color: #fff;
+}
+.entry-header h2 {
+  margin-bottom: 8px;
+}
+.entry h3 {
+  margin-top: 24px;
   margin-bottom: 12px;
+  color: #fff;
 }
 .entry p {
   color: var(--text-dim);
   font-size: 15px;
+}
+.entry-body {
+  padding-top: 8px;
+}
+.entry-body--collapsed {
+  max-height: 15vh;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  transition: transform 0.2s;
+}
+.chevron--open {
+  transform: rotate(180deg);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+.tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-muted);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: var(--font-mono);
 }
 
 .contact-section {
