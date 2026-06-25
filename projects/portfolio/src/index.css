@@ -150,11 +150,57 @@ textarea {
   );
 }
 
-.dot-mask {
+.dot-mask-ring,
+.dot-mask-cover {
   position: fixed;
   inset: 0;
-  z-index: -1;
   pointer-events: none;
+}
+.dot-mask-ring {
+  z-index: -2;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px),
+    radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px);
+  background-size: 40px 40px, 40px 40px;
+  background-position: 0 0, 20px 20px;
+  opacity: 0.25;
+  filter: var(--dm-filter, hue-rotate(60deg) saturate(1.5));
+  mask-image:
+    radial-gradient(
+      ellipse var(--dm-w, 900px) var(--dm-h, 600px) at var(--dm-cx, 50%) var(--dm-cy, 30%),
+      transparent 0%,
+      transparent var(--dm-hide, 30%),
+      black var(--dm-hide, 30%),
+      transparent var(--dm-shift, 60%),
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      black 0%,
+      black 70%,
+      transparent 100%
+    );
+  mask-composite: intersect;
+  -webkit-mask-image:
+    radial-gradient(
+      ellipse var(--dm-w, 900px) var(--dm-h, 600px) at var(--dm-cx, 50%) var(--dm-cy, 30%),
+      transparent 0%,
+      transparent var(--dm-hide, 30%),
+      black var(--dm-hide, 30%),
+      transparent var(--dm-shift, 60%),
+      transparent 100%
+    ),
+    linear-gradient(
+      to bottom,
+      black 0%,
+      black 70%,
+      transparent 100%
+    );
+  -webkit-mask-composite: source-in;
+}
+.dot-mask-cover {
+  z-index: -1;
   background: radial-gradient(
     ellipse var(--dm-w, 900px) var(--dm-h, 600px) at var(--dm-cx, 50%) var(--dm-cy, 30%),
     var(--dm-bg, var(--bg)) 0%,

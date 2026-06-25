@@ -4,6 +4,8 @@ interface DotMaskProps {
   width?: string;
   height?: string;
   hideRadius?: string;
+  shiftRadius?: string;
+  filter?: string;
   bgColor?: string;
 }
 
@@ -13,6 +15,8 @@ export function DotMask({
   width = '900px',
   height = '600px',
   hideRadius = '30%',
+  shiftRadius = '60%',
+  filter = 'hue-rotate(60deg) saturate(1.5)',
   bgColor,
 }: DotMaskProps) {
   const vars = {
@@ -21,8 +25,15 @@ export function DotMask({
     '--dm-w': width,
     '--dm-h': height,
     '--dm-hide': hideRadius,
+    '--dm-shift': shiftRadius,
+    '--dm-filter': filter,
     ...(bgColor ? { '--dm-bg': bgColor } : {}),
   } as Record<string, string>;
 
-  return <div class="dot-mask" style={vars} />;
+  return (
+    <>
+      <div class="dot-mask-ring" style={vars} />
+      <div class="dot-mask-cover" style={vars} />
+    </>
+  );
 }
