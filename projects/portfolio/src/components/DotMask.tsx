@@ -20,8 +20,6 @@ interface DotMaskProps {
   bgColor?: string;
 }
 
-const BOTTOM_FADE = 'linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 70%, rgba(0,0,0,0) 100%)';
-
 function zoneGradient(
   zone: ZoneConfig,
   type: 'cover' | 'ring',
@@ -43,31 +41,13 @@ function zoneGradient(
   return `radial-gradient(ellipse ${w} ${h} at ${cx} ${cy}, ${g})`;
 }
 
-function buildMask(
+function buildGradients(
   zones: ZoneConfig[],
   type: 'cover' | 'ring',
   centerOpacity: string,
-): { image: string; composite: string } {
-  const grads = zones.length > 0
-    ? zones.map(z => zoneGradient(z, type, centerOpacity))
-    : [];
-
-  if (grads.length === 0) {
-    return { image: BOTTOM_FADE, composite: '' };
-  }
-
-  grads.push(BOTTOM_FADE);
-
-  const composites: string[] = [];
-  for (let i = 0; i < grads.length - 2; i++) {
-    composites.push('add');
-  }
-  composites.push('intersect');
-
-  return {
-    image: grads.join(', '),
-    composite: composites.join(', '),
-  };
+): string {
+  if (zones.length === 0) return 'transparent';
+  return zones.map(z => zoneGradient(z, type, centerOpacity)).join(', ');
 }
 
 export function DotMask({
@@ -83,29 +63,24 @@ export function DotMask({
   bgColor,
 }: DotMaskProps) {
   const zonesArr = zones ?? [{ cx, cy, width, height, hideRadius, shiftRadius }];
-  const ringMask = buildMask(zonesArr, 'ring', centerOpacity);
-  const coverMask = buildMask(zonesArr, 'cover', centerOpacity);
+  const ringImage = buildGradients(zonesArr, 'ring', centerOpacity);
+  const coverImage = buildGradients(zonesArr, 'cover', centerOpacity);
 
   const vars = {
     '--dm-filter': filter,
-    '--dm-center-opacity': centerOpacity,
     ...(bgColor ? { '--dm-bg': bgColor } : {}),
   } as Record<string, string>;
 
   const ringStyle = {
     ...vars,
-    maskImage: ringMask.image,
-    maskComposite: ringMask.composite,
-    WebkitMaskImage: ringMask.image,
-    WebkitMaskComposite: ringMask.composite ? 'source-in' : '',
+    maskImage: ringImage,
+    WebkitMaskImage: ringImage,
   } as Record<string, string>;
 
   const coverStyle = {
     ...vars,
-    maskImage: coverMask.image,
-    maskComposite: coverMask.composite,
-    WebkitMaskImage: coverMask.image,
-    WebkitMaskComposite: coverMask.composite ? 'source-in' : '',
+    maskImage: coverImage,
+    WebkitMaskImage: coverImage,
   } as Record<string, string>;
 
   return (

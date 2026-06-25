@@ -125,10 +125,18 @@ textarea {
 .layout {
   position: relative;
 }
-.bg-dots {
+.bg-dots,
+.dot-mask-ring {
   position: fixed;
-  inset: 0;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: -800px;
   pointer-events: none;
+  transform: translateY(var(--scroll-offset, 0px));
+}
+
+.bg-dots {
   z-index: -2;
   background-image:
     radial-gradient(circle, var(--accent) 1.5px, transparent 1.5px),
@@ -136,26 +144,8 @@ textarea {
   background-size: 40px 40px, 40px 40px;
   background-position: 0 0, 20px 20px;
   opacity: 0.25;
-  mask-image: linear-gradient(
-    to bottom,
-    black 0%,
-    black 70%,
-    transparent 100%
-  );
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 0%,
-    black 70%,
-    transparent 100%
-  );
 }
 
-.dot-mask-ring,
-.dot-mask-cover {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-}
 .dot-mask-ring {
   z-index: -2;
   background-color: var(--bg);
@@ -167,9 +157,24 @@ textarea {
   opacity: 0.25;
   filter: var(--dm-filter, hue-rotate(60deg) saturate(1.5));
 }
+
 .dot-mask-cover {
+  position: fixed;
+  inset: 0;
   z-index: -1;
+  pointer-events: none;
   background: var(--dm-bg, var(--bg));
+}
+
+.dot-bottom-fade {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 30vh;
+  z-index: -1;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--bg));
 }
 
 .navbar {

@@ -1,5 +1,5 @@
 import type { ComponentChildren } from "preact";
-import { useEffect, useRef } from "preact/hooks";
+import { useEffect } from "preact/hooks";
 import { Navbar } from "./Navbar";
 
 interface LayoutProps {
@@ -7,14 +7,12 @@ interface LayoutProps {
 }
 
 export function Layout({ children }: LayoutProps) {
-  const bgRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const el = bgRef.current;
-    if (!el) return;
-
     const onScroll = () => {
-      el.style.transform = `translateY(${-window.scrollY * 0.35}px)`;
+      document.documentElement.style.setProperty(
+        '--scroll-offset',
+        `${-window.scrollY * 0.35}px`
+      );
     };
 
     window.addEventListener("scroll", onScroll, { passive: true });
@@ -23,7 +21,8 @@ export function Layout({ children }: LayoutProps) {
 
   return (
     <div class="layout">
-      <div ref={bgRef} class="bg-dots" />
+      <div class="bg-dots" />
+      <div class="dot-bottom-fade" />
       <Navbar />
       <main>{children}</main>
       <footer class="footer">
