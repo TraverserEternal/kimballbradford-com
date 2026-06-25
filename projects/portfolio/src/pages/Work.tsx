@@ -5,7 +5,13 @@ import { DotMask } from "../components/DotMask";
 export function Work() {
   return (
     <div class="page">
-      <DotMask height="1200px" cy="45%" hideRadius="30%" shiftRadius="45%" />
+      <DotMask scrollTrack={1} zones={[
+        { cy: '15%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+        { cy: '45%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+        { cy: '75%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+        { cy: '105%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+        { cy: '140%', height: '400px', hideRadius: '25%', shiftRadius: '40%' },
+      ]} />
       <h1>Work</h1>
       <p>Projects I&rsquo;ve built.</p>
 

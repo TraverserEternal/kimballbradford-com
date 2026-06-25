@@ -1,3 +1,5 @@
+import { useEffect, useState } from "preact/hooks";
+
 interface ZoneConfig {
   cx?: string;
   cy?: string;
@@ -18,17 +20,23 @@ interface DotMaskProps {
   filter?: string;
   centerOpacity?: string;
   bgColor?: string;
+  scrollTrack?: number;
+}
+
+function parsePct(v: string): number {
+  return parseFloat(v) || 0;
 }
 
 function zoneGradient(
   zone: ZoneConfig,
   type: 'cover' | 'ring',
   centerOpacity: string,
+  scrollOffset: number,
 ): string {
   const w = zone.width || '900px';
   const h = zone.height || '600px';
   const cx = zone.cx || '50%';
-  const cy = zone.cy || '30%';
+  const cy = `${parsePct(zone.cy || '30%') - scrollOffset}%`;
   const hide = zone.hideRadius || '40%';
   const shift = zone.shiftRadius || '50%';
 
@@ -45,9 +53,10 @@ function buildGradients(
   zones: ZoneConfig[],
   type: 'cover' | 'ring',
   centerOpacity: string,
+  scrollOffset: number,
 ): string {
   if (zones.length === 0) return 'transparent';
-  return zones.map(z => zoneGradient(z, type, centerOpacity)).join(', ');
+  return zones.map(z => zoneGradient(z, type, centerOpacity, scrollOffset)).join(', ');
 }
 
 export function DotMask({
@@ -61,10 +70,25 @@ export function DotMask({
   filter = 'hue-rotate(60deg) saturate(1.5)',
   centerOpacity = '0.85',
   bgColor,
+  scrollTrack = 0,
 }: DotMaskProps) {
   const zonesArr = zones ?? [{ cx, cy, width, height, hideRadius, shiftRadius }];
-  const ringImage = buildGradients(zonesArr, 'ring', centerOpacity);
-  const coverImage = buildGradients(zonesArr, 'cover', centerOpacity);
+  const [scrollOffset, setScrollOffset] = useState(0);
+
+  useEffect(() => {
+    if (!scrollTrack) return;
+
+    const onScroll = () => {
+      setScrollOffset(window.scrollY * scrollTrack / window.innerHeight * 100);
+    };
+
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, [scrollTrack]);
+
+  const ringImage = buildGradients(zonesArr, 'ring', centerOpacity, scrollOffset);
+  const coverImage = buildGradients(zonesArr, 'cover', centerOpacity, scrollOffset);
 
   const vars = {
     '--dm-filter': filter,

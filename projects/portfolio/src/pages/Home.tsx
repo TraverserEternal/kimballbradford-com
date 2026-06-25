@@ -5,7 +5,7 @@ import { DotMask } from "../components/DotMask";
 export function Home() {
   return (
     <div class="page">
-      <DotMask cy="22%" />
+      <DotMask cy="12%" />
       <section class="hero">
         <h1>Kimball Bradford</h1>
         <p>
